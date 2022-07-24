@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test 2</title>
+  </head>
+  <body>
+    <script src="https://unpkg.com/react@16.3.2/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16.3.2/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js" charset="utf-8"></script>
+    <script type="text/babel">
+      class Input extends React.PureComponent {
+        render() {
+          let { forwardedRef, ...otherProps } = this.props;
+          return <input {...otherProps} ref={forwardedRef} />;
+        }
+      }
+
+      const TextInput = React.forwardRef((props, ref) => {
+        return <Input {...props} forwardedRef={ref} />;
+      });
+
+      class FocusableInput extends React.Component {
+        ref = React.createRef();
+
+        render() {
+          return <TextInput ref={this.ref} />;
+        }
+
+        componentDidUpdate(prevProps) {
+          if (!prevProps.focused && this.props.focused) {
+            this.ref.current.focus();
+          }
+        }
+
+        componentDidMount() {
+          if (this.props.focused) {
+            this.ref.current.focus();
+          }
+        }
+      }
+
+      FocusableInput.defaultProps = {
+        focused: false,
+      };
+
+      const App = (props) => <FocusableInput focused={props.focused} />;
+
+      document.body.innerHTML = "<div id='root'></div>";
+      const rootElement = document.getElementById("root");
+      ReactDOM.render(<App />, rootElement);
+    </script>
+    <div id="root"></div>
+  </body>
+</html>
